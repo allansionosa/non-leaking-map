@@ -1,0 +1,61 @@
+title NLM
+participant Erlang Shell as ES
+participant NLM
+ES->NLM:startlink
+state over NLM:wait
+ES->NLM:First Integer, Second Integer
+state over NLM:right input
+NLM->NLM: List_Input when List_Input >= 0, List_Input =< 281474976710655
+alt True
+NLM->NLM:First_Integer, Second_Integer
+
+else False
+NLM->NLM:Invalid input! Please enter a valid Integer.
+state over NLM:Wait
+end
+state over NLM:Initialization
+NLM->NLM: F1 = 59032325644659
+NLM->NLM:F2 = 1
+NLM->NLM: Red1 = F1 bxor F2
+NLM->NLM:Red0 = 0
+NLM->NLM: Mul1 = First_Integer
+NLM->NLM:Mul0 = 0
+NLM->NLM:  Bit_list = "000000000000000000000000000000000000000000000000"
+NLM->NLM: R = 0
+NLM->NLM: Rotation = 0
+state over NLM:R Shifting
+NLM->NLM:R_Binarize_List_Slice_Reverse = \nlists:reverse(string:slice(lists:reverse(Bit_List ++ binary_to_list(integer_to_binary(R, 2))), 0, 48))
+NLM->NLM: R_Binarize_List_Slice_Reverse_Concatenate_Rotate = \nlists:nthtail(1, R_Binarize_List_Slice_Reverse) ++ lists:sublist(R_Binarize_List_Slice_Reverse, 1)
+state over NLM:R transform
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Number = \nbinary_to_integer(list_to_binary(R_Binarize_List_Slice_Reverse_Concatenate_Rotate),2)
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Number_Band = \nR_Binarize_List_Slice_Reverse_Concatenate_Rotate_Number band 1
+state over NLM:Red Result
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Integer_Band
+alt  0
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Integer bxor Red0
+else 1
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Integer bxor Red1
+end
+state over NLM:Y Shifting
+NLM->NLM:Second_Integer_Binarize_List_Slice_Reverse = \nlists:reverse(string:slice(lists:reverse(Bit_List ++ binary_to_list(integer_to_binary(Second_Integer, 2))), 0, 48))
+NLM->NLM:Second_Integer_Binarize_List_Slice_Reverse_Concatenate_Rotate = \nlists:nthtail(1, Second_Integer_Binarize_List_Slice_Reverse) ++ lists:sublist(Second_Integer_Binarize_List_Slice_Reverse, 1)
+state over NLM:Y transform
+NLM->NLM:Second_Integer_Binarize_List_Slice_Reverse_Concatenate_Rotate_Number = \nbinary_to_integer(list_to_binary(Second_Integer_Binarize_List_Slice_Reverse_Concatenate_Rotate), 2)
+NLM->NLM: Second_Integer_Binarize_List_Slice_Reverse_Concatenate_Rotate_Number_Band = \nSecond_Integer_Binarize_List_Slice_Reverse_Concatenate_Rotate_Number band 1
+state over NLM:Mul Result
+NLM->NLM:Second_Input_Binarize_List_Slice_Reverse_Concatenate_Rotate_Integer_Band
+alt 0
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Integer_Band bxor Mul0
+else 1
+NLM->NLM:R_Binarize_List_Slice_Reverse_Concatenate_Rotate_Integer_Band bxor Mul1
+end
+state over NLM:Rotation continue
+NLM->NLM:Rotation
+alt 48
+state over NLM:wait
+else else
+NLM->NLM:R Rotate, Second Integer Rotate, Result, Hexadecimal Result
+end
+state over NLM:R Shifting
+NLM->ES:R Rotate, Second Integer Rotate, Result, Hexadecimal Result
+state over NLM: wait
